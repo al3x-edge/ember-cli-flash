@@ -3,10 +3,12 @@ import { module, test } from 'qunit';
 import Ember from 'ember';
 import FlashMessage from 'ember-cli-flash/flash/object';
 
-var testTimerDuration = 50;
-var { run }           = Ember;
-var flash             = null;
-var SANDBOX           = {};
+const { forEach } = Ember.EnumerableUtils;
+
+let testTimerDuration = 50;
+let { run }           = Ember;
+let flash             = null;
+let SANDBOX           = {};
 
 module('FlashMessageObject', {
   beforeEach() {
@@ -67,3 +69,24 @@ test('#destroyMessage deletes the message and timer', function(assert) {
   assert.equal(flash.get('isDestroyed'), true);
   assert.equal(flash.get('timer'), null);
 });
+
+test('#is{type}Type aliases are read only', function(assert) {
+  const typeAliases = [
+    'isSuccessType',
+    'isInfoType',
+    'isWarningType',
+    'isDangerType',
+    'isErrorType'
+  ];
+
+  assert.expect(typeAliases.length);
+
+  run(() => {
+    forEach(typeAliases, (alias) => {
+      assert.throws(() => {
+        flash.set(alias, 'derp');
+      });
+    });
+  });
+});
+
